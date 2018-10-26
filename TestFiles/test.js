@@ -14,4 +14,6 @@ $('#button-id').click(function() {
 
 $('.button-class').click(function () {
     console.log('.button-class was clicked')
+
+    
 });
