@@ -2,26 +2,23 @@ $(document).ready(function() {
 
     console.log('Page Loaded');
 
-    // Bootstrappin' and flexboxin' because it's pretty.
     $(document.body).css('margin', '2em');
     $(document.body).prepend("<div id='mainContainer' class='container'></div>");
 
-    
-    // Create rows for the page.
-    $('#mainContainer').append("<div id='row1' class='row flex-centered'></div>");
-    $('#mainContainer').append("<div id='row2' class='row flex-centered'></div>");
-    $('#mainContainer').append("<div id='row3' class='row flex-centered'></div>");
+    // Adding 3 rows to main container
+    $('#mainContainer').append("<div id='row1' class='container row flex-centered'></div>");
+    $('#mainContainer').append("<div id='row2' class='container row flex-centered'></div>");
+    $('#mainContainer').append("<div id='row3' class='container row flex-centered'></div>");
 
-    $('.flex-centered').css({
+    $('.row').css({
         'display': 'flex',
         'justify-content': 'center',
     });
 
-    // Create form with submit button.
+    // Row 1: Entry Form & Submit Button
     $('#row1').append("<form id='form1' action=''></form>");
     $('#form1').append("<input id='form1TextBox' type='text'></input>");
     $('#form1').append("<input id='btnSubmit' type='submit' value='Submit' class='btn-dark'></input>");
-
     $('#form1').css({
         'display': 'block',
         'margin': '2em',
@@ -34,13 +31,37 @@ $(document).ready(function() {
         'margin': '0 0.5em 0 0.5em',
         'border-radius': '0.25em',
     });
-    
 
-    // Disable form button on initial page load.
+    // Row 2: Message Banner
+    $('#row2').append(`<div id='messageBanner'></div>`);
+    $('#messageBanner').css({
+        'margin': '2em',
+        'font-family': 'Lobster, cursive',
+        'text-align': 'center',
+    });
+
+    // Row 3: Unordered List
+    $('#row3').append(`<div id='listWrapper' class='container'></div>`);
+    $('#listWrapper').append(`<ul id='list1' class='list'></ul>`);
+    $('#listWrapper').css({
+        'width': '100%',
+        'justify-content': 'center',
+    });
+    $('#list1').css({
+        'margin': '0 2em',
+        'font-family': 'Lobster, cursive',
+    });
+
+    // Disable 'submit' button on initial page load.
     $('#btnSubmit').attr('disabled', 'disabled');
 
 
-    // FUNCTION: ENABLE FORM BUTTON IF FORM TEXT ENTERED BY USER
+    // ================================================================
+    // ===================== MAIN INTERFACE LOGIC =====================
+    // ================================================================
+
+
+    // Form Validation (enable/disable 'submit' button)
     $('#form1TextBox').change(function() {
         console.log("Button Enabled");
         let validEntry = true;
@@ -53,32 +74,27 @@ $(document).ready(function() {
             console.log("Valid Form");
         };
     });
-
-    // Trigger form validation when page loads in case of auto-complete.
-    $('#form1TextBox').trigger('change')
-
-
+    
+    $('#form1TextBox').trigger('change');  // Trigger form validation immediately in case browser auto-completes form on initial page load.
+    
+    let listItemCount = 0;
 
     // FUNCTION: SUBMIT FORM
     $('#form1').on('submit', function() {
-        console.log('Form Submitted');
-        console.log($('input').val());
+        console.log(`Form Submitted: "${$('input').val()}"`);
 
-        alert(`${$('input[type=text]').val()}`);
+        alert(`${$('input[type=text]').val()}`); // Display alert first.
 
-        $('#row2').append(`<div id='messageBanner'></div>`);
-        $('#messageBanner').css({
-            'margin': '2em',
-            'font-family': 'Lobster, cursive',
-            'text-align': 'center',
-        });
+        $('#messageBanner').empty();  // Clear out previous message text.
+
         $('#messageBanner').append(`<h3 id='messageText'>${$('input[type=text]').val()}</h3>`);
         $('#messageText').css({
             'margin': '1em 2em 1em 2em',
         });
         
-        // FUNCTION: CHANGE H3 BACKGROUND COLOR & BORDER RADIUS
+        // Message Banner Event Listener (Mouse Enter)
         $('#messageBanner').on('mouseenter', function(){
+
             let red = Math.floor(Math.random() * 256);
             let green = Math.floor(Math.random() * 256);
             let blue = Math.floor(Math.random() * 256);
@@ -93,16 +109,39 @@ $(document).ready(function() {
                 'border-radius': randomBorderRadius,
                 'background-color': randomColor,
             });
+        }); // END Message Banner Event Listener (Mouse Enter)
 
-            console.log("New Color: ", randomColor);
-        }); // END FUNCTION: CHANGE H3 BACKGROUND COLOR & BORDER RADIUS
+        // Add list item to page.
+        listItemCount = listItemCount + 1;
+        console.log(`List Item Count: ${listItemCount}`);
 
-        return false;   // Prevent reload page (form default)
+        $('#list1').append(`<li id='listItem${listItemCount}' class='listItem'>${$('input[type=text]').val()}</li>`);
+        $('.listItem').css({
+            'justify-content': 'left',
+            'font-size': '20px',
+        });
+
+        // List Item Event Listener (Click)
+        $(`#listItem${listItemCount}`).on('click', function(){
+            let red = Math.floor(Math.random() * 256);
+            let green = Math.floor(Math.random() * 256);
+            let blue = Math.floor(Math.random() * 256);
+            let randomColor = `rgb(${red},${green},${blue})`;
+            $(this).css({
+                'color': randomColor,
+            });
+        }); // END List Item Event Listener (Double Click)
+
+        // List Item Event Listener (Double Clicks)
+        $(`#listItem${listItemCount}`).on('dblclick', function() {
+            console.log(`Removed List Item #${listItemCount}`);
+            $(`#listItem${listItemCount}`).remove();
+            listItemCount = listItemCount - 1;
+            console.log(`List Item Count: ${listItemCount}`);
+        }); // END List Item Event Listener (Double Click)
+
+        return false;   // Prevent reloading page (form default)
 
     }); // END FUNCTION: SUBMIT FORM
 
-
-
-    
-
-}); // END DOCUMENT.READY FUNCTION.
+}); // END DOCUMENT READY FUNCTION.
