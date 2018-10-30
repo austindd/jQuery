@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     let mainContainer = document.createElement('div');
     mainContainer.id = 'main-container';
-    mainContainer.style.margin = '2em 0 2em 0';
+    mainContainer.style.margin = '2em 0 12em 0';
     mainContainer.style.fontFamily = 'Play, sans-serif';
 
     document.body.appendChild(mainContainer);
@@ -40,9 +40,9 @@ document.addEventListener('DOMContentLoaded', function(){
     textBox1.style.margin = '0 auto';
     textBox1.style.height = '90%';
     textBox1.style.width = '400px';
-    textBox1.style.lineHeight = '300px';
     textBox1.style.border = '1px solid black';
     textBox1.style.fontSize = '20px';
+    textBox1.style.padding = '0 0.5em 0 0.5em';
 
     textBox1Wrapper.appendChild(textBox1);
     mainContainer.appendChild(textBox1Wrapper);
@@ -147,12 +147,23 @@ document.addEventListener('DOMContentLoaded', function(){
 
     mainContainer.appendChild(myNameDiv);
 
-    button3.addEventListener('click', function(){
-        let myNameDivSpan = document.createElement('span')
-        let myNameDivSpanText = document.createTextNode('Austin Davis');
+    let myNameDivFlag = false;
 
-        myNameDivSpan.appendChild(myNameDivSpanText);
-        myNameDiv.appendChild(myNameDivSpan);
+    button3.addEventListener('click', function(){
+        if(myNameDivFlag == false) {
+            myNameDiv.className = 'display-3 align-middle text-dark bg-warning';
+            let myNameDivSpan = document.createElement('span');
+            myNameDivSpan.id = 'myNameDivSpan';
+            let myNameDivSpanText = document.createTextNode('Austin Davis');
+            myNameDivSpan.appendChild(myNameDivSpanText);
+            myNameDiv.appendChild(myNameDivSpan);
+            myNameDivFlag = true;
+        } else if (myNameDivFlag == true) {
+            myNameDiv.className = 'display-3 align-middle text-dark';
+            myNameDiv.removeChild(document.getElementById('myNameDivSpan'))
+            myNameDivFlag = false;
+        };
+
     });
 
 
@@ -177,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function(){
     list1.style.margin = '1em auto';
     list1.style.fontStyle = 'italic';
     list1.style.fontWeight = 'bold';
-    list1.style.width = '75%';
+    list1.style.width = '80%';
 
     mainContainer.appendChild(list1);
 
@@ -209,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function(){
             listItem.className = 'list-group-item';
             listItem.style.textAlign = 'center';
 
-            let listItemText = document.createTextNode(newFriend);
+            let listItemText = document.createTextNode(`-- ` + newFriend + ` --`);
             listItem.appendChild(listItemText);
             list1.appendChild(listItem);
 
@@ -228,15 +239,4 @@ document.addEventListener('DOMContentLoaded', function(){
             };
         };
     });
-
-
-
-
-
-
-    // // Kenny Loggins Danger Zone
-    // `https://www.youtube.com/watch?v=siwpn14IE7E`
-
-    // // Burt Reynolds Gator
-    // `https://www.youtube.com/watch?v=sr7laYDcqIw`
 });
