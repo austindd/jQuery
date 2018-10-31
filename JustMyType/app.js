@@ -96,11 +96,15 @@ $(document).ready(function () {
         console.log('Key:', myChar, 'ASCII: ', myCharCode);
 
 
-        if (myCharCode == 13) {
-
+        if (myCharCode == 13) {  // 'Enter'key
             currentRow = currentRow + 1;
-            
-        } else if (myCharCode != 13) {
+        };
+
+        if (myCharCode == 32) {  // 'Space'key
+            myChar = ' ';
+        };
+        
+        if (myCharCode != 13) {  // If input clears all exceptional conditions
 
             currentString = sentenceObject[currentRow];
             let newString = currentString + myChar;
@@ -111,6 +115,8 @@ $(document).ready(function () {
             $('#para3').text(sentenceObject[3]);
             $('#para4').text(sentenceObject[4]);
             $('#para5').text(sentenceObject[5]);
+
+            
         };
     });
 

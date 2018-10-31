@@ -18,7 +18,7 @@
 }
 
 .keyboard-container {
-  margin-top: 40%;
+  margin-top: 35%;
 }
 
 #target-letter {
@@ -42,12 +42,18 @@
 }
 
 .well-highlight{
-    background-color: #343a40;
-    color: #f8f9fa;
+  background-color: #343a40;
+  color: #f8f9fa;
 }
 
 .output-line {
-    font-family: 'Baloo Bhaijaan', cursive;
-    font-size: 20px;
-    margin-top: 3px;
+  font-family: 'Times New Roman', Times, sans-serif;
+  font-size: 20px;
+  margin-top: 3px;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+.footer {
+  font-family: 'Courier New', Courier, monospace;
+  justify-content: 'flex-center' ;
 }
