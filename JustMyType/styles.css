@@ -18,7 +18,7 @@
 }
 
 .keyboard-container {
-  margin-top: 200px;
+  margin-top: 40%;
 }
 
 #target-letter {
@@ -34,13 +34,20 @@
   font-size: 20px;
 }
 .glyphicon-ok {
-  color: #1DA237
+  color: #1DA237;
 }
 
 .glyphicon-remove {
-  color : #CD2626
+  color : #CD2626;
 }
+
 .well-highlight{
     background-color: #343a40;
-    color: #f8f9fa
+    color: #f8f9fa;
+}
+
+.output-line {
+    font-family: 'Baloo Bhaijaan', cursive;
+    font-size: 20px;
+    margin-top: 3px;
 }
