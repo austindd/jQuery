@@ -75,11 +75,46 @@ $(document).ready(function () {
         };
         });
 
-        
+    $(document.body).keyup(function() {
+        $(`.well-highlight`).removeClass('well-highlight');
+    });
 
 
 
-    $(document.body).keyup(function(){
+
+
+// ================ Clicks and taps =================
+
+
+    $('.well').on('mousedown' || 'touchstart', function() {
+
+        highlighter = this.id;
+        $(`#${highlighter}`).addClass('well-highlight');
+
+        myCharCode = this.id;
+        myChar = this.innerHTML;
+        console.log('Key:', myChar, 'ASCII: ', myCharCode);
+
+
+        if (myCharCode == 13) {
+
+            currentRow = currentRow + 1;
+            
+        } else if (myCharCode != 13) {
+
+            currentString = sentenceObject[currentRow];
+            let newString = currentString + myChar;
+            sentenceObject[currentRow] = newString;
+    
+            $('#para1').text(sentenceObject[1]);
+            $('#para2').text(sentenceObject[2]);
+            $('#para3').text(sentenceObject[3]);
+            $('#para4').text(sentenceObject[4]);
+            $('#para5').text(sentenceObject[5]);
+        };
+    });
+
+    $('.well').on('mouseup' || 'touchend', function() {
         $(`.well-highlight`).removeClass('well-highlight');
     });
 
