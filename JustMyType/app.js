@@ -23,30 +23,35 @@ $(document).ready(function(){
 
     
     $(document.body).keydown(function(){
-        if (shiftKeyDown == false){
-            let key = (event.keyCode + 32);     // Accounting for lowercase ASCII codes (JS keyCode +32)
+
+        let key = (event.keyCode);
+
+        if (shiftKeyDown == false && key > 64 && key < 91){
+            key = key + 32;     // Accounting for lowercase ASCII codes (JS keyCode +32)
             $(`#${key}`).addClass('well-highlight');
         } else {
-            let key = (event.keyCode);
             $(`#${key}`).addClass('well-highlight');
         };
     });
 
     $(document.body).keyup(function(){
-        if (shiftKeyDown == false){
-            let key = (event.keyCode + 32);     // Accounting for lowercase ASCII codes (JS keyCode +32)
+
+        let key = (event.keyCode);
+
+        if (shiftKeyDown == false && key > 64 && key < 91){
+            key = key + 32;     // Accounting for lowercase letter ASCII codes (JS keyCode +32)
             console.log('keyup: ', key);
             console.log($(`#${key}`));
             $(`#${key}`).removeClass('well-highlight');
         } else {
-            let key = (event.keyCode);
+            
             console.log('keyup: ', key);
             console.log($(`#${key}`));
             $(`#${key}`).removeClass('well-highlight');
         };
     });
     
-// NUMBERS STILL DON'T WORK. NEED TO REFACTOR THE CONDITIONAL FUNCTIONS.
+
 
 
 
