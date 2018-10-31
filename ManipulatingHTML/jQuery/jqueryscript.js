@@ -34,11 +34,9 @@ $(document).ready(function() {
     });
     $('.row').css({
         'margin': '2em 0 2em 0',
-        'border': '1px solid black',
     });
     $('.column').css({
         'padding': '0.5em',
-        'border': '1px solid black',
     });
 
 
@@ -168,12 +166,14 @@ $(document).ready(function() {
     $('#nameBannerWrapper').css({
         'display': 'block',
     });
+
     // Button 3
     $('#nameBannerWrapper').append(`<button id='button3' class='btn btn-dark'>Don't wear it out!</button>`);
     $('#button3').css({
         'display': 'block',
-        'margin': '0 auto',
+        'margin': '2px auto',
     });
+
     // Name Banner
     $('#nameBannerWrapper').append(`<div id='nameBanner'></div>`);
     $('#nameBanner').css({
@@ -184,10 +184,9 @@ $(document).ready(function() {
         'text-align': 'center',
         'padding': '14px',
     });
+
     // Button3 Function
-
     let nameBannerFlag = false;
-
     $('#button3').on('click', function(){
         if(nameBannerFlag == false){
             $('#nameBanner').text("Austin Davis");
@@ -200,10 +199,7 @@ $(document).ready(function() {
         };
 
     });
-      
     
-
-
 
 // ==================== OBJECTIVE 6 ====================
 
@@ -212,10 +208,71 @@ $(document).ready(function() {
     $("#column18").addClass('col-1 d-inline-flex justify-content-center');
     $('#column16').append(`<div id='taskNum6' class='taskNum'>(6)</div>`);
 
+    // Wrapper (Unordered List and Button)
+    $('#column17').append(`<div id='listWrapper' class='flex-column wrapper'></div>`);
+    $('#listWrapper').css({
+        'width': '100%',
+    });
+
+    // Button 4: Imaginary Friend Creator
+    $('#listWrapper').append(`<button id='button4' class='btn btn-dark'>Imaginate Friend</button>`);
+    $('#button4').css({
+        'display': 'block',
+        'margin': '2px auto',
+    });
+    // Unordered List
+    $('#listWrapper').append(`<ul id='friendList' class='list-group'></ul>`);
+    $('#friendList').css({
+        'text-align': 'center',
+    });
+
+    // Friend Creator Logic
+    let friendArray = [
+        'Sterling Archer',
+        'Lana Kane',
+        'Cheryl Tunt',
+        'Cyril Figgis',
+        'Pam Poovey',
+        'Algernop Krieger',
+        'Mallory Archer',
+        'Slater',
+        'Barry Dylan',
+        'Katya Kazanova',
+        'Woodhouse',
+        'Kenny Loggins',
+        'Burt Reynolds'
+    ];
+    let friendCount = 0;
+
+    $('#button4').on('click', function(){
+        if(friendArray.length > 0){
+            friendCount = friendCount + 1;
+            friendArray.sort(function(a, b) {return 0.5 - Math.random()});
+            let newFriend = friendArray.pop();
+            console.log("New Friend: ", newFriend);
+
+            $('#friendList').append(`<li id='friend${friendCount}' class='list-group-item friend'>${newFriend}</li>`);
+            $(`#friend${friendCount}`).on('mouseenter', function(){
+                $(this).addClass('bg-warning');
+                $(this).css({
+                    'font-weight': 'bold',
+                    'font-size': '2em',
+                });
+            });
+
+            $(`#friend${friendCount}`).on('mouseout', function(){
+                $(this).removeClass('bg-warning');
+                $(this).css({
+                    'font-weight': 'normal',
+                    'font-size': '1em',
+                });
+            });
+        };
+    });
 
 // =====================================================
 
-    // Class Styles
+    // Class Styles/Functions
     $('.taskNum').css({
         'padding': '0',
         'font-size': '20px',
@@ -224,4 +281,6 @@ $(document).ready(function() {
         'height': '2.5em',
         'font-size': '16px',
     });
-});
+
+
+}); // End Document Ready Function
