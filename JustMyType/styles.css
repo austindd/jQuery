@@ -12,8 +12,8 @@
 #yellow-block {
   position: absolute;
   margin-top: 10px;
-  width: 15px;
-  height: 15px;
+  width: 1em;
+  height: 1em;
   background-color: yellow;
 }
 
@@ -47,13 +47,24 @@
 }
 
 .output-line {
-  font-family: 'Times New Roman', Times, sans-serif;
-  font-size: 20px;
-  margin-top: 3px;
-  margin-left: 1em;
-  margin-right: 1em;
+  display: inline-block;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8em;
+  padding-top: 5px;
+  padding-left: 1em;
+  padding-right: 1em;
 }
 .footer {
   font-family: 'Courier New', Courier, monospace;
   justify-content: 'flex-center' ;
+  font-weight: bold;
 }
+
+.disable_text_highlighting {
+  -webkit-user-select: none; /* Webkit */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE 10  */
+  /* Currently not supported in Opera but will be soon */
+  -o-user-select: none;
+  user-select: none;
+  }
