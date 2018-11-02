@@ -22,7 +22,7 @@
 }
 
 .keyboard-container {
-  margin-top: 30%;
+  margin-top: 35%;
 }
 
 #target-letter {
@@ -36,6 +36,7 @@
 
 #feedback {
   font-size: 20px;
+  height: 30px;
 }
 .glyphicon-ok {
   color: #1DA237;
@@ -80,4 +81,12 @@
   /* Currently not supported in Opera but will be soon */
   -o-user-select: none;
   user-select: none;
-  }
+}
+
+.good-char {
+  color: green;
+}
+
+.bad-char {
+  color: red;
+}

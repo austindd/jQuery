@@ -6,11 +6,11 @@ $(document).ready(function () {
 
     // Paragraph wrappers
 
-    $('#sentence').append(`<div id='para1Wrapper' class='para-wrapper col-md-10'></div>`);
-    $('#sentence').append(`<div id='para2Wrapper' class='para-wrapper col-md-10'></div>`);
-    $('#sentence').append(`<div id='para3Wrapper' class='para-wrapper col-md-10'></div>`);
-    $('#sentence').append(`<div id='para4Wrapper' class='para-wrapper col-md-10'></div>`);
-    $('#sentence').append(`<div id='para5Wrapper' class='para-wrapper col-md-10'></div>`);
+    $('#sentence').append(`<div id='para1Wrapper' class='para-wrapper col-md-12'></div>`);
+    $('#sentence').append(`<div id='para2Wrapper' class='para-wrapper col-md-12'></div>`);
+    $('#sentence').append(`<div id='para3Wrapper' class='para-wrapper col-md-12'></div>`);
+    $('#sentence').append(`<div id='para4Wrapper' class='para-wrapper col-md-12'></div>`);
+    $('#sentence').append(`<div id='para5Wrapper' class='para-wrapper col-md-12'></div>`);
 
     $('#para1Wrapper').append(`<p id='para1' class='output-line'></p>`);
     $('#para2Wrapper').append(`<p id='para2' class='output-line'></p>`);
@@ -72,6 +72,7 @@ $(document).ready(function () {
     };
 
     let myCharCode = null;
+    let myChar = null;
     let currentRow = 1;
     let charCount = 0;
     let currentString = '';
@@ -79,41 +80,19 @@ $(document).ready(function () {
     $(document.body).keypress(function () {
         myCharCode = event.keyCode || event.which;
         myChar = event.key;
-        console.log('Key:', event.key, ' | ASCII: ', event.keyCode);
-        $(`#${myCharCode}`).addClass('well-highlight');
-
-        if (inputObject[currentRow].length < correctObject[currentRow].length) {
-
-            inputObject[currentRow].push(myChar);
-            let outputString = '';
-            for (let i = 0; i < inputObject[currentRow].length; i++) {
-                outputString = outputString + `${inputObject[currentRow][i]}`;
-            };
-            $(`#para${currentRow}`).text(outputString);
-
+        console.log('Key:', myChar, ' | ASCII: ', event.keyCode);
+        $(`#${myCharCode}`).addClass('well-highlight'); // On any keypress, highlight associated key element
+        if (inputObject[currentRow].length < correctObject[currentRow].length) { // If current row not yet complete
+            displayUserInput()
         }
-        else if (currentRow < 5 && inputObject[currentRow].length == correctObject[currentRow].length) {
-
+        else if (currentRow < 5 && inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of current row AND not on last row
             currentRow = currentRow + 1; // new row
             charCount = 0; // reset character count to 0
-
-            // Same as normal output commands, just on the new row.
-            inputObject[currentRow].push(myChar)
-            let outputString = '';
-            for (let i = 0; i < inputObject[currentRow].length; i++) {
-                outputString = outputString + `${inputObject[currentRow][i]}`;
-            };
-            $(`#para${currentRow}`).text(outputString);
-
-
-            console.log('Row #: ', currentRow);
-            console.log('Char #: ', charCount);
-            console.log(inputObject);
+            displayUserInput()
         };
-
-
-        displayLogic();
-
+        feedback();
+        targetLetter();
+        yellowBlock();
         charCount = charCount + 1;
     });
 
@@ -122,24 +101,57 @@ $(document).ready(function () {
         $(`.well-highlight`).removeClass('well-highlight');
     });
 
+    let outputArray = {
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: [],
+    };
+    let outputString = '';
 
-    function compareTextArrays() {
-        if (inputObject[currentRow][charCount] == correctObject[currentRow][charCount]) {
-            // display green check
+    function displayUserInput() {
+        if (myCharCode == 13) {
+            myChar = '[ENTER]'  // Changing the way 'enter' key text is displayed after pressing 'enter'.
         };
-        if (inputObject[currentRow][charCount] == correctObject[currentRow][charCount]) {
-            // display red 'X'
-        };
+        inputObject[currentRow].push(myChar);
+        let goodChar = feedback()
+
+        // Push a span element for each character into an array, with different HTML classes for right/wrong characters.
+        outputArray[currentRow].push(`<span id='row-${currentRow}-char-${charCount}' class='${goodChar}'>${myChar}<span>`);
+
+        $(`#para${currentRow}`).append(`${outputArray[currentRow][charCount]}`);
+        // inputObject[currentRow].push(myChar);
+        // let outputArray = '';
+        // for (let i = 0; i < inputObject[currentRow].length; i++) {
+        //     outputArray = outputArray + `${inputObject[currentRow][i]}`;
+        // };
+        // $(`#para${currentRow}`).text(outputArray);
     };
 
+    let countKeysGood = 0;
+    let countKeysBad = 0;
+    let feedbackArray = [];
 
+    function feedback() {
+        if (inputObject[currentRow][charCount] == correctObject[currentRow][charCount]) {
+            countKeysGood++;
+            $('#feedback').empty();
+            $('#feedback').append(`<span id='feedbackIcon' class='glyphicon glyphicon-ok'></span>`);
+            return 'good-char';
+        };
+        if (inputObject[currentRow][charCount] != correctObject[currentRow][charCount]) {
+            countKeysBad++;
+            $('#feedback').empty();
+            $('#feedback').append(`<span id='feedbackIcon' class='glyphicon glyphicon-remove'></span>`);
+            return 'bad-char';
+        };
+    };
 
     let paraXY = null;
     let yellowBlockXY = null;
 
-    function displayLogic() {
-
-        // ========== Target Letter ==========
+    function targetLetter() {
         if (inputObject[currentRow].length < correctObject[currentRow].length && inputObject[currentRow].length > 0) {
 
             if (`${correctObject[currentRow][charCount + 1]}` == ' ') { // If next key is 'space' 
@@ -155,9 +167,9 @@ $(document).ready(function () {
         if (inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of line
             $('#target-letter').text(`${correctObject[currentRow + 1][0]}`);
         };
+    };
 
-        // ========== Yellow Block ==========
-
+    function yellowBlock() {
         // find paragraph dimensions
         paraXY = $(`#para${currentRow}`)[0].getBoundingClientRect();
         // set yellow block position
@@ -172,7 +184,8 @@ $(document).ready(function () {
             'left': `${yellowBlockXY.left}px`, // relative to paragraph element's right edge (see above)
         });
     };
-    window.onload = displayLogic(); // Run once when the page loads so yellow block is already in position
+    window.onload = yellowBlock(); // Run once when the page loads so yellow block is already in position
+    window.onload = targetLetter(); // First target letter displayed on page load
 
 
 
@@ -180,7 +193,6 @@ $(document).ready(function () {
 
 
 
-    
 
     // ================ Mouse Click & Touch Support =================
 
