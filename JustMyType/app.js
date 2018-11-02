@@ -70,7 +70,7 @@ $(document).ready(function () {
         4: sentences[3].split(''),
         5: sentences[4].split(''),
     };
-    
+
     let myCharCode = null;
     let currentRow = 1;
     let charCount = 0;
@@ -79,31 +79,57 @@ $(document).ready(function () {
     $(document.body).keypress(function () {
         myCharCode = event.keyCode || event.which;
         myChar = event.key;
-        console.log('Key:', event.key, 'ASCII: ', event.keyCode);
+        console.log('Key:', event.key, ' | ASCII: ', event.keyCode);
         $(`#${myCharCode}`).addClass('well-highlight');
-        if (currentRow < 5 && myCharCode == 13) {
-            currentRow = currentRow + 1;
-            charCount = 0;
-            console.log('Row #: ', currentRow);
-            console.log('Char #: ', charCount);
-        } else if (myCharCode != 13) {
+
+        if (inputObject[currentRow].length < correctObject[currentRow].length) {
+
             inputObject[currentRow].push(myChar);
             let outputString = '';
             for (let i = 0; i < inputObject[currentRow].length; i++) {
                 outputString = outputString + `${inputObject[currentRow][i]}`;
             };
             $(`#para${currentRow}`).text(outputString);
+
+        }
+        else if (currentRow < 5 && inputObject[currentRow].length == correctObject[currentRow].length) {
+
+            currentRow = currentRow + 1; // new row
+            charCount = 0; // reset character count to 0
+
+            // Same as normal output commands, just on the new row.
+            inputObject[currentRow].push(myChar)
+            let outputString = '';
+            for (let i = 0; i < inputObject[currentRow].length; i++) {
+                outputString = outputString + `${inputObject[currentRow][i]}`;
+            };
+            $(`#para${currentRow}`).text(outputString);
+
+
+            console.log('Row #: ', currentRow);
+            console.log('Char #: ', charCount);
+            console.log(inputObject);
         };
-        dispTargetLetter();
+
+
+        displayLogic();
+
         charCount = charCount + 1;
     });
+
+    // Lifting a key removes all highlight classes from html wells.
     $(document.body).keyup(function () {
         $(`.well-highlight`).removeClass('well-highlight');
     });
 
 
     function compareTextArrays() {
-
+        if (inputObject[currentRow][charCount] == correctObject[currentRow][charCount]) {
+            // display green check
+        };
+        if (inputObject[currentRow][charCount] == correctObject[currentRow][charCount]) {
+            // display red 'X'
+        };
     };
 
 
@@ -111,28 +137,30 @@ $(document).ready(function () {
     let paraXY = null;
     let yellowBlockXY = null;
 
-    function dispTargetLetter() {
+    function displayLogic() {
+
+        // ========== Target Letter ==========
         if (inputObject[currentRow].length < correctObject[currentRow].length && inputObject[currentRow].length > 0) {
-            
-            if (`${correctObject[currentRow][charCount+1]}` == ' ') {
+
+            if (`${correctObject[currentRow][charCount + 1]}` == ' ') { // If next key is 'space' 
                 $('#target-letter').text('[space]');
             }
             else {
-                $('#target-letter').text(`${correctObject[currentRow][charCount+1]}`);
+                $('#target-letter').text(`${correctObject[currentRow][charCount + 1]}`); // Normal output
             };
         };
-        if (inputObject[currentRow].length == 0 && currentRow < 5) {
-            $('#target-letter').text(`${correctObject[currentRow + 1][charCount]}`);
-        }
-        if (inputObject[currentRow].length == correctObject[currentRow].length) {
-            $('#target-letter').text('[enter]');
+        if (inputObject[currentRow].length == 0 && currentRow < 5) { // If at beginning of line
+            $('#target-letter').text(`${correctObject[currentRow][charCount]}`);
+        };
+        if (inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of line
+            $('#target-letter').text(`${correctObject[currentRow + 1][0]}`);
         };
 
+        // ========== Yellow Block ==========
 
-
-        // find paragraph element dimensions
+        // find paragraph dimensions
         paraXY = $(`#para${currentRow}`)[0].getBoundingClientRect();
-        // set yellow block position data based on paragraph dimensions
+        // set yellow block position
         yellowBlockXY = {
             top: paraXY.top,
             left: paraXY.width + 51,
@@ -144,11 +172,15 @@ $(document).ready(function () {
             'left': `${yellowBlockXY.left}px`, // relative to paragraph element's right edge (see above)
         });
     };
-    window.onload = dispTargetLetter(); // Run once when the page loads so yellow block is already in position
+    window.onload = displayLogic(); // Run once when the page loads so yellow block is already in position
 
 
 
 
+
+
+
+    
 
     // ================ Mouse Click & Touch Support =================
 
