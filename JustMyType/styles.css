@@ -10,15 +10,19 @@
 }
 
 #yellow-block {
-  position: absolute;
-  margin-top: 10px;
-  width: 1em;
-  height: 1em;
+  display: inline-block;
+  position: absolute !important;
+  margin-top: 5px;
+  width: 24px;
+  height: 32px;
   background-color: yellow;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8em;
+  text-align: left;
 }
 
 .keyboard-container {
-  margin-top: 35%;
+  margin-top: 30%;
 }
 
 #target-letter {
@@ -46,14 +50,23 @@
   color: #f8f9fa;
 }
 
+.para-wrapper {
+  position: relative;
+  padding-left: 1em;
+  padding-right: 1em;
+  display: block;
+  height: 42px;
+}
+
 .output-line {
   display: inline-block;
+  position: static;
   font-family: 'Roboto Mono', monospace;
   font-size: 0.8em;
   padding-top: 5px;
-  padding-left: 1em;
-  padding-right: 1em;
+  height: 27px;
 }
+
 .footer {
   font-family: 'Courier New', Courier, monospace;
   justify-content: 'flex-center' ;
