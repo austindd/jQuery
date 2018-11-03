@@ -82,18 +82,29 @@ $(document).ready(function () {
         myChar = event.key;
         console.log('Key:', myChar, ' | ASCII: ', event.keyCode);
         $(`#${myCharCode}`).addClass('well-highlight'); // On any keypress, highlight associated key element
-        if (inputObject[currentRow].length < correctObject[currentRow].length) { // If current row not yet complete
-            displayUserInput()
-        }
-        else if (currentRow < 5 && inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of current row AND not on last row
+
+
+        if (currentRow == sentences.length + 1 && inputObject[currentRow].length == correctObject[currentRow].length) {// if at the end of last line
+            console.log('-- END --');
+            return false;
+
+        } else if (inputObject[currentRow].length < correctObject[currentRow].length) { // If current row not yet complete
+            displayUserInput();
+            feedback();
+            targetLetter();
+            yellowBlock();
+            charCount = charCount + 1;
+
+        } else if (currentRow < sentences.length + 1 && inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of current row AND not on last row
             currentRow = currentRow + 1; // new row
             charCount = 0; // reset character count to 0
-            displayUserInput()
+            displayUserInput();
+            feedback();
+            targetLetter();
+            yellowBlock();
+            charCount = charCount + 1;
         };
-        feedback();
-        targetLetter();
-        yellowBlock();
-        charCount = charCount + 1;
+
     });
 
     // Lifting a key removes all highlight classes from html wells.
@@ -114,19 +125,16 @@ $(document).ready(function () {
         if (myCharCode == 13) {
             myChar = '[ENTER]'  // Changing the way 'enter' key text is displayed after pressing 'enter'.
         };
+
         inputObject[currentRow].push(myChar);
         let goodChar = feedback()
 
         // Push a span element for each character into an array, with different HTML classes for right/wrong characters.
         outputArray[currentRow].push(`<span id='row-${currentRow}-char-${charCount}' class='${goodChar}'>${myChar}<span>`);
 
+        // Append <span> to paragraph element, displays on screen.
         $(`#para${currentRow}`).append(`${outputArray[currentRow][charCount]}`);
-        // inputObject[currentRow].push(myChar);
-        // let outputArray = '';
-        // for (let i = 0; i < inputObject[currentRow].length; i++) {
-        //     outputArray = outputArray + `${inputObject[currentRow][i]}`;
-        // };
-        // $(`#para${currentRow}`).text(outputArray);
+
     };
 
     let countKeysGood = 0;
@@ -161,17 +169,25 @@ $(document).ready(function () {
                 $('#target-letter').text(`${correctObject[currentRow][charCount + 1]}`); // Normal output
             };
         };
-        if (inputObject[currentRow].length == 0 && currentRow < 5) { // If at beginning of line
+        if (inputObject[currentRow].length == 0 && currentRow < sentences.length + 1) { // If at beginning of line
             $('#target-letter').text(`${correctObject[currentRow][charCount]}`);
         };
-        if (inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of line
+        if (inputObject[currentRow].length == correctObject[currentRow].length && currentRow == sentences.length + 1) { // If at end of line && not on last row
             $('#target-letter').text(`${correctObject[currentRow + 1][0]}`);
         };
     };
 
     function yellowBlock() {
         // find paragraph dimensions
-        paraXY = $(`#para${currentRow}`)[0].getBoundingClientRect();
+        if (inputObject[currentRow].length < correctObject[currentRow].length ||                // If current line incomplete OR
+            (currentRow == sentences.length + 1 && inputObject[currentRow].length == correctObject[currentRow].length)) {  // if on the last character of last row
+            paraXY = $(`#para${currentRow}`)[0].getBoundingClientRect();
+        };
+
+        if (currentRow < sentences.length + 1 && inputObject[currentRow].length == correctObject[currentRow].length) { // If completed last character of current row && not on final row
+            console.log(currentRow);
+            paraXY = $(`#para${currentRow + 1}`)[0].getBoundingClientRect();
+        };
         // set yellow block position
         yellowBlockXY = {
             top: paraXY.top,
