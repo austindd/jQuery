@@ -130,8 +130,12 @@ $(document).ready(function () {
 
     function displayUserInput() {
         if (myCharCode == 13) {
-            myChar = '[ENTER]'  // Changing the way 'enter' key text is displayed after pressing 'enter'.
+            myChar = '[ENTER]';  // Changing the way 'enter' key text is displayed after pressing 'enter'.
         };
+        if (myCharCode == 32) {
+            myChar = ' ';
+        };
+
         if (stopUserInput == false) {
 
             inputObject[currentRow].push(myChar);
@@ -153,6 +157,7 @@ $(document).ready(function () {
 
     function feedback() {
         if (stopUserInput == false) {
+            console.log('Input: ', inputObject[currentRow][charCount], 'Correct: ', correctObject[currentRow][charCount]);
 
             if (inputObject[currentRow][charCount] == correctObject[currentRow][charCount]) {
                 countKeysGood++;
@@ -187,7 +192,8 @@ $(document).ready(function () {
             if (inputObject[currentRow].length == 0 && currentRow < sentences.length + 1) { // If at beginning of line
                 $('#target-letter').text(`${correctObject[currentRow][charCount]}`);
             };
-            if (inputObject[currentRow].length == correctObject[currentRow].length && currentRow == sentences.length + 1) { // If at end of line && not on last row
+            if (inputObject[currentRow].length == correctObject[currentRow].length && currentRow != sentences.length + 1) { // If at end of line && not on last row
+                console.log('Displaying next row first character');
                 $('#target-letter').text(`${correctObject[currentRow + 1][0]}`);
             };
         } else if (stopUserInput == true) {
@@ -205,14 +211,21 @@ $(document).ready(function () {
             };
 
             if (currentRow < sentences.length + 1 && inputObject[currentRow].length == correctObject[currentRow].length) { // If completed last character of current row && not on final row
-                console.log(currentRow);
                 paraXY = $(`#para${currentRow + 1}`)[0].getBoundingClientRect();
             };
             // set yellow block position
-            yellowBlockXY = {
-                top: paraXY.top,
-                left: paraXY.width + 51,
+            if (myCharCode == 32) {
+                yellowBlockXY = {
+                    top: paraXY.top,
+                    left: paraXY.width + 65,
+                };
+            } else {
+                yellowBlockXY = {
+                    top: paraXY.top,
+                    left: paraXY.width + 51,
+                };
             };
+            console.log(yellowBlockXY.left);
             // reposition yellow block on screen
             $('#yellow-block').css({
                 'position': 'absolute !important',
@@ -243,27 +256,24 @@ $(document).ready(function () {
         myChar = this.innerHTML;
         console.log('Key:', myChar, 'ASCII: ', myCharCode);
 
-        if (myCharCode == 13) {  // 'Enter'key
-            currentRow = currentRow + 1;
-        };
+        if (stopUserInput == false && inputObject[currentRow].length < correctObject[currentRow].length) { // If current row not yet complete
+            displayUserInput();
+            feedback();
+            targetLetter();
+            yellowBlock();
+            charCount = charCount + 1;
+            testEndCondition();
 
-        if (myCharCode == 32) {  // 'Space'key
-            myChar = ' ';
-        };
-
-        if (myCharCode != 13) {  // If input clears all exceptional conditions
-
-            currentString = inputObject[currentRow];
-            let newString = currentString + myChar;
-            inputObject[currentRow] = newString;
-
-            $('#para1').text(inputObject[1]);
-            $('#para2').text(inputObject[2]);
-            $('#para3').text(inputObject[3]);
-            $('#para4').text(inputObject[4]);
-            $('#para5').text(inputObject[5]);
-
-
+        } else if (stopUserInput == false && inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of current row AND not on last row
+            console.log('New Row Created');
+            currentRow = currentRow + 1; // new row
+            charCount = 0; // reset character count to 0
+            displayUserInput();
+            feedback();
+            targetLetter();
+            yellowBlock();
+            charCount = charCount + 1;
+            testEndCondition();
         };
     });
 
