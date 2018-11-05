@@ -34,6 +34,7 @@ $(document).ready(function () {
         if (key == 16) {
             $('#keyboard-upper-container').show();
             $('#keyboard-lower-container').hide();
+            $(`.shift`).addClass('well-highlight');
             shiftKeyDown = true;
         };
     });
@@ -42,6 +43,7 @@ $(document).ready(function () {
         if (key == 16) {
             $('#keyboard-upper-container').hide();
             $('#keyboard-lower-container').show();
+            $(`.shift`).removeClass('well-highlight');
             shiftKeyDown = false;
         };
     });
@@ -76,7 +78,6 @@ $(document).ready(function () {
     let myChar = null;
     let currentRow = 1;
     let charCount = 0;
-    let currentString = '';
 
     $(document.body).keypress(function () {
         myCharCode = event.keyCode || event.which;
@@ -84,6 +85,11 @@ $(document).ready(function () {
         console.log('Key:', myChar, ' | ASCII: ', event.keyCode);
         $(`#${myCharCode}`).addClass('well-highlight'); // On any keypress, highlight associated key element
         testEndCondition()
+
+        if (timer.timerOn == false) {
+            timer.timerOn = true;
+            timer.run();
+        }
 
         if (stopUserInput == false && inputObject[currentRow].length < correctObject[currentRow].length) { // If current row not yet complete
             displayUserInput();
@@ -157,7 +163,6 @@ $(document).ready(function () {
 
     function feedback() {
         if (stopUserInput == false) {
-            console.log('Input: ', inputObject[currentRow][charCount], 'Correct: ', correctObject[currentRow][charCount]);
 
             if (inputObject[currentRow][charCount] == correctObject[currentRow][charCount]) {
                 countKeysGood++;
@@ -193,7 +198,6 @@ $(document).ready(function () {
                 $('#target-letter').text(`${correctObject[currentRow][charCount]}`);
             };
             if (inputObject[currentRow].length == correctObject[currentRow].length && currentRow != sentences.length + 1) { // If at end of line && not on last row
-                console.log('Displaying next row first character');
                 $('#target-letter').text(`${correctObject[currentRow + 1][0]}`);
             };
         } else if (stopUserInput == true) {
@@ -209,12 +213,11 @@ $(document).ready(function () {
             if (inputObject[currentRow].length < correctObject[currentRow].length) {   // If current line incomplete OR
                 paraXY = $(`#para${currentRow}`)[0].getBoundingClientRect();
             };
-
             if (currentRow < sentences.length + 1 && inputObject[currentRow].length == correctObject[currentRow].length) { // If completed last character of current row && not on final row
                 paraXY = $(`#para${currentRow + 1}`)[0].getBoundingClientRect();
             };
             // set yellow block position
-            if (myCharCode == 32) {
+            if (myCharCode == 32) {     // Force yellow block to move on 'space' key.
                 yellowBlockXY = {
                     top: paraXY.top,
                     left: paraXY.width + 65,
@@ -225,7 +228,6 @@ $(document).ready(function () {
                     left: paraXY.width + 51,
                 };
             };
-            console.log(yellowBlockXY.left);
             // reposition yellow block on screen
             $('#yellow-block').css({
                 'position': 'absolute !important',
@@ -241,44 +243,117 @@ $(document).ready(function () {
 
 
 
+    // ================== Words Per Minute Timer ===================
 
-
-
-
-    // ================ Mouse Click & Touch Support =================
-
-    $('.well').on('mousedown' || 'touchstart', function () {
-
-        highlighter = this.id;
-        $(`#${highlighter}`).addClass('well-highlight');
-
-        myCharCode = this.id;
-        myChar = this.innerHTML;
-        console.log('Key:', myChar, 'ASCII: ', myCharCode);
-
-        if (stopUserInput == false && inputObject[currentRow].length < correctObject[currentRow].length) { // If current row not yet complete
-            displayUserInput();
-            feedback();
-            targetLetter();
-            yellowBlock();
-            charCount = charCount + 1;
-            testEndCondition();
-
-        } else if (stopUserInput == false && inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of current row AND not on last row
-            console.log('New Row Created');
-            currentRow = currentRow + 1; // new row
-            charCount = 0; // reset character count to 0
-            displayUserInput();
-            feedback();
-            targetLetter();
-            yellowBlock();
-            charCount = charCount + 1;
-            testEndCondition();
-        };
+    $('#prompt-container').append(`<div id='timer-box' class='timer'>00:00:00</div>`);
+    $('#timer-box').css({
+        'font-size': '20px',
     });
+    
+    // Build timer object
+    let timer = {
+        timerOn: false,
+        element: $('#timer-box'),
+        totalSeconds: 0,
+        seconds: 0,
+        minutes: 0,
+        hours: 0,
+        string:
+            (this.hours ? (this.hours > 9 ? this.hours : '0' + this.hours) : '00') + ':' +
+            (this.minutes ? (this.minutes > 9 ? this.minutes : '0' + this.minutes) : '00') + ':' +
+            (this.seconds ? (this.seconds > 9 ? this.seconds : '0' + this.seconds) : '00'),
+        buildString() {
+            this.seconds++;
+            this.totalSeconds++;
+            if (this.seconds >= 60) {
+                this.seconds = 0;
+                this.minutes++;
+                if (this.minutes >= 60) {
+                    this.minutes = 0;
+                    this.hours++;
+                }
+            }
+        },
+        run() {
+            if (this.timerOn == true) {
+                t = setTimeout(this.buildString, 1000);
+                console.log(this.string);
+                this.element.text(`${this.string}`);
+            }
+        },
+    };
 
-    $('.well').on('mouseup' || 'touchend', function () {
-        $(`.well-highlight`).removeClass('well-highlight');
-    });
+    
+
+
+
+
+
+
+
+    // ================ Mouse Click & Touch Support (CURRENTLY BROKEN) =================
+
+    // let shiftToggle = false;
+
+    // $('.well').on('mousedown' || 'touchstart', function () {
+
+    //     highlighter = this.id;
+    //     $(`#${highlighter}`).addClass('well-highlight');
+
+    //     if (this.id == '16') {
+    //         if (shiftToggle = false) {
+    //             $('#keyboard-upper-container').show();
+    //             $('#keyboard-lower-container').hide();
+    //             $(`#16`).addClass('well-highlight');
+    //             shiftKeyDown = true;
+    //             shiftToggle = true;
+    //         };
+    //         if (shiftToggle = true) {
+    //             $('#keyboard-upper-container').hide();
+    //             $('#keyboard-lower-container').show();
+    //             $(`#16`).removeClass('well-highlight');
+    //             shiftKeyDown = false;
+    //             shiftToggle = false;
+    //         };
+    //     };
+
+    //     myCharCode = this.id;
+    //     myChar = this.innerHTML;
+    //     console.log('Key:', myChar, 'ASCII: ', myCharCode);
+
+    //     if (stopUserInput == false && inputObject[currentRow].length < correctObject[currentRow].length) { // If current row not yet complete
+    //         displayUserInput();
+    //         feedback();
+    //         targetLetter();
+    //         yellowBlock();
+    //         charCount = charCount + 1;
+    //         testEndCondition();
+
+    //     } else if (stopUserInput == false && inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of current row AND not on last row
+    //         console.log('New Row Created');
+    //         currentRow = currentRow + 1; // new row
+    //         charCount = 0; // reset character count to 0
+    //         displayUserInput();
+    //         feedback();
+    //         targetLetter();
+    //         yellowBlock();
+    //         charCount = charCount + 1;
+    //         testEndCondition();
+    //     };
+    // });
+
+    // $('.well').on('mouseup' || 'touchend', function () {
+    //     highlighter = this.id;
+    //     $(`#${highlighter}`).addClass('well-highlight');
+
+    //     if (this.id == '16') {
+    //         $('#keyboard-upper-container').hide();
+    //         $('#keyboard-lower-container').show();
+    //         $(`#16`).removeClass('well-highlight');
+    //         shiftKeyDown = false;
+    //     };
+
+    //     $(`.well-highlight`).removeClass('well-highlight');
+    // });
 
 });
