@@ -49,7 +49,6 @@ $(document).ready(function () {
     });
 
 
-    // ==================== KEYBOARD & OUPUT LOGIC ====================
 
     let sentences = [
         'ten ate neite ate nee enet ite ate inet ent eate',
@@ -58,14 +57,18 @@ $(document).ready(function () {
         'itant eate anot eat nato inate eat anot tain eat',
         'nee ene ate ite tent tiet ent ine ene ete ene ate'
     ];
-    let inputObject = {
+
+
+    // ======================== EVENT LISTENERS & GAME LOGIC ========================
+
+    let inputArray = {
         1: [],
         2: [],
         3: [],
         4: [],
         5: [],
     };
-    let correctObject = {
+    let correctArray = {
         1: sentences[0].split(''),
         2: sentences[1].split(''),
         3: sentences[2].split(''),
@@ -91,7 +94,7 @@ $(document).ready(function () {
             timer.run();
         }
 
-        if (stopUserInput == false && inputObject[currentRow].length < correctObject[currentRow].length) { // If current row not yet complete
+        if (stopUserInput == false && inputArray[currentRow].length < correctArray[currentRow].length) { // If current row not yet complete
             displayUserInput();
             feedback();
             targetLetter();
@@ -99,7 +102,7 @@ $(document).ready(function () {
             charCount = charCount + 1;
             testEndCondition();
 
-        } else if (stopUserInput == false && inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of current row AND not on last row
+        } else if (stopUserInput == false && inputArray[currentRow].length == correctArray[currentRow].length) { // If at end of current row AND not on last row
             console.log('New Row Created');
             currentRow = currentRow + 1; // new row
             charCount = 0; // reset character count to 0
@@ -111,19 +114,43 @@ $(document).ready(function () {
             testEndCondition();
         };
     });
-
-    function testEndCondition() {
-        if (currentRow >= sentences.length && inputObject[currentRow].length >= correctObject[currentRow].length) {// If completed last character of last line
-            console.log('end');
-            stopUserInput = true;
-            return true;
-        };
-    };
-
     // Lifting a key removes all highlight classes from html wells.
     $(document.body).keyup(function () {
         $(`.well-highlight`).removeClass('well-highlight');
     });
+
+
+
+
+    // ========================== HELPER FUNCTIONS ==========================
+    
+
+    let resultsDisplayed = false;
+
+    function testEndCondition() {
+
+        // If completed last character of last line, stop all text input and most functions.
+        if (currentRow >= sentences.length && inputArray[currentRow].length >= correctArray[currentRow].length) {
+            console.log('end');
+            stopUserInput = true;
+            timer.stop();
+
+            // Display results, including errors and WPM.
+            if(resultsDisplayed == false) {
+                $('#feedback').empty();
+                $('#target-letter').empty();
+                setTimeout(function () {
+                    $('#feedback').text('THE END');
+                }, 200);
+                setTimeout(function () {
+                    $('#target-letter').text(`Errors: ${countKeysBad} | WPM: ${getWPM()}`);
+                }, 1200);
+                resultsDisplayed = true;
+            };
+            return true;
+        };
+    };
+
 
     let outputArray = {
         1: [],
@@ -132,7 +159,6 @@ $(document).ready(function () {
         4: [],
         5: [],
     };
-    let outputString = '';
 
     function displayUserInput() {
         if (myCharCode == 13) {
@@ -141,44 +167,40 @@ $(document).ready(function () {
         if (myCharCode == 32) {
             myChar = ' ';
         };
-
         if (stopUserInput == false) {
-
-            inputObject[currentRow].push(myChar);
+            inputArray[currentRow].push(myChar);
             let goodChar = feedback()
-
             // Push a span element for each character into an array, with different HTML classes for right/wrong characters.
             outputArray[currentRow].push(`<span id='row-${currentRow}-char-${charCount}' class='${goodChar}'>${myChar}<span>`);
-
             // Append <span> to paragraph element, displays on screen.
             $(`#para${currentRow}`).append(`${outputArray[currentRow][charCount]}`);
-
         };
         testEndCondition();
     };
 
+
+
     let countKeysGood = 0;
     let countKeysBad = 0;
-    let feedbackArray = [];
 
     function feedback() {
         if (stopUserInput == false) {
-
-            if (inputObject[currentRow][charCount] == correctObject[currentRow][charCount]) {
-                countKeysGood++;
+            if (inputArray[currentRow][charCount] == correctArray[currentRow][charCount]) {
+                countKeysGood = countKeysGood + 1;
                 $('#feedback').empty();
                 $('#feedback').append(`<span id='feedbackIcon' class='glyphicon glyphicon-ok'></span>`);
                 return 'good-char';
             };
-            if (inputObject[currentRow][charCount] != correctObject[currentRow][charCount]) {
-                countKeysBad++;
+            if (inputArray[currentRow][charCount] != correctArray[currentRow][charCount]) {
+                countKeysBad = countKeysBad + 1;
                 $('#feedback').empty();
                 $('#feedback').append(`<span id='feedbackIcon' class='glyphicon glyphicon-remove'></span>`);
                 return 'bad-char';
             };
         };
-        testEndCondition();
     };
+
+
 
     let paraXY = null;
     let yellowBlockXY = null;
@@ -186,34 +208,36 @@ $(document).ready(function () {
     function targetLetter() {
         if (stopUserInput == false) {
 
-            if (inputObject[currentRow].length < correctObject[currentRow].length && inputObject[currentRow].length > 0) {
+            if (inputArray[currentRow].length < correctArray[currentRow].length && inputArray[currentRow].length > 0) {
 
-                if (`${correctObject[currentRow][charCount + 1]}` == ' ') { // If next key is 'space' 
+                if (`${correctArray[currentRow][charCount + 1]}` == ' ') { // If next key is 'space' 
                     $('#target-letter').text('[space]');
                 } else {
-                    $('#target-letter').text(`${correctObject[currentRow][charCount + 1]}`); // Normal output
+                    $('#target-letter').text(`${correctArray[currentRow][charCount + 1]}`); // Normal output
                 };
             };
-            if (inputObject[currentRow].length == 0 && currentRow < sentences.length + 1) { // If at beginning of line
-                $('#target-letter').text(`${correctObject[currentRow][charCount]}`);
+            if (inputArray[currentRow].length == 0 && currentRow < sentences.length + 1) { // If at beginning of line
+                $('#target-letter').text(`${correctArray[currentRow][charCount]}`);
             };
-            if (inputObject[currentRow].length == correctObject[currentRow].length && currentRow != sentences.length + 1) { // If at end of line && not on last row
-                $('#target-letter').text(`${correctObject[currentRow + 1][0]}`);
+            if (inputArray[currentRow].length == correctArray[currentRow].length && currentRow != sentences.length + 1) { // If at end of line && not on last row
+                $('#target-letter').text(`${correctArray[currentRow + 1][0]}`);
             };
         } else if (stopUserInput == true) {
-            alert('All Finished!');
+            return false;
         };
         testEndCondition();
     };
+
+
 
     function yellowBlock() {
         if (stopUserInput == false) {
 
             // find paragraph dimensions
-            if (inputObject[currentRow].length < correctObject[currentRow].length) {   // If current line incomplete OR
+            if (inputArray[currentRow].length < correctArray[currentRow].length) {   // If current line incomplete OR
                 paraXY = $(`#para${currentRow}`)[0].getBoundingClientRect();
             };
-            if (currentRow < sentences.length + 1 && inputObject[currentRow].length == correctObject[currentRow].length) { // If completed last character of current row && not on final row
+            if (currentRow < sentences.length + 1 && inputArray[currentRow].length == correctArray[currentRow].length) { // If completed last character of current row && not on final row
                 paraXY = $(`#para${currentRow + 1}`)[0].getBoundingClientRect();
             };
             // set yellow block position
@@ -237,20 +261,16 @@ $(document).ready(function () {
         };
         testEndCondition();
     };
+
     window.onload = yellowBlock(); // Run once when the page loads so yellow block is already in position
     window.onload = targetLetter(); // First target letter displayed on page load
 
 
 
+    // ======================== Game Timer =========================
 
-    // ================== Words Per Minute Timer ===================
+    $('#target').append(`<div id='timer-box' class='timer fixed-top'>00:00:00</div>`);
 
-    $('#prompt-container').append(`<div id='timer-box' class='timer'>00:00:00</div>`);
-    $('#timer-box').css({
-        'font-size': '20px',
-    });
-    
-    // Build timer object
     let timer = {
         timerOn: false,
         element: $('#timer-box'),
@@ -258,33 +278,49 @@ $(document).ready(function () {
         seconds: 0,
         minutes: 0,
         hours: 0,
-        string:
-            (this.hours ? (this.hours > 9 ? this.hours : '0' + this.hours) : '00') + ':' +
-            (this.minutes ? (this.minutes > 9 ? this.minutes : '0' + this.minutes) : '00') + ':' +
-            (this.seconds ? (this.seconds > 9 ? this.seconds : '0' + this.seconds) : '00'),
-        buildString() {
-            this.seconds++;
-            this.totalSeconds++;
-            if (this.seconds >= 60) {
-                this.seconds = 0;
-                this.minutes++;
-                if (this.minutes >= 60) {
-                    this.minutes = 0;
-                    this.hours++;
+        string: '00:00:00',
+        count() {
+            timer.seconds++;
+            timer.totalSeconds++;
+            if (timer.seconds >= 60) {
+                timer.seconds = 0;
+                timer.minutes++;
+                if (timer.minutes >= 60) {
+                    timer.minutes = 0;
+                    timer.hours++;
                 }
             }
+            timer.string =
+                (timer.hours ? (timer.hours > 9 ? timer.hours : '0' + timer.hours) : '00') + ':' +
+                (timer.minutes ? (timer.minutes > 9 ? timer.minutes : '0' + timer.minutes) : '00') + ':' +
+                (timer.seconds ? (timer.seconds > 9 ? timer.seconds : '0' + timer.seconds) : '00');
+            timer.element.text(`${timer.string}`);
         },
         run() {
-            if (this.timerOn == true) {
-                t = setTimeout(this.buildString, 1000);
-                console.log(this.string);
-                this.element.text(`${this.string}`);
+            if (timer.timerOn == true) {
+                t = setInterval(timer.count, 1000);
+            }
+        },
+        stop() {
+            if (timer.timerOn == true) {
+                clearInterval(t);
             }
         },
     };
 
-    
 
+    function getWPM() {
+        let wordCount = sentences.length + 1; // Accounting for first word of each line (not separated by spaces).
+        for (let i = 1; i < sentences.length + 1; i++) {
+            for (let j = 0; j < correctArray[i].length; j++) {
+                if (correctArray[i][j] == ' ') {
+                    wordCount = wordCount + 1;
+                };
+            };
+        };
+        let wpm = parseFloat(Math.round((wordCount / (timer.totalSeconds / 60)) * 100) / 100).toFixed(2);
+        return wpm;
+    };
 
 
 
@@ -321,7 +357,7 @@ $(document).ready(function () {
     //     myChar = this.innerHTML;
     //     console.log('Key:', myChar, 'ASCII: ', myCharCode);
 
-    //     if (stopUserInput == false && inputObject[currentRow].length < correctObject[currentRow].length) { // If current row not yet complete
+    //     if (stopUserInput == false && inputArray[currentRow].length < correctArray[currentRow].length) { // If current row not yet complete
     //         displayUserInput();
     //         feedback();
     //         targetLetter();
@@ -329,7 +365,7 @@ $(document).ready(function () {
     //         charCount = charCount + 1;
     //         testEndCondition();
 
-    //     } else if (stopUserInput == false && inputObject[currentRow].length == correctObject[currentRow].length) { // If at end of current row AND not on last row
+    //     } else if (stopUserInput == false && inputArray[currentRow].length == correctArray[currentRow].length) { // If at end of current row AND not on last row
     //         console.log('New Row Created');
     //         currentRow = currentRow + 1; // new row
     //         charCount = 0; // reset character count to 0
