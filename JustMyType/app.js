@@ -123,7 +123,7 @@ $(document).ready(function () {
 
 
     // ========================== HELPER FUNCTIONS ==========================
-    
+
 
     let resultsDisplayed = false;
 
@@ -141,10 +141,16 @@ $(document).ready(function () {
                 $('#target-letter').empty();
                 setTimeout(function () {
                     $('#feedback').text('THE END');
-                }, 200);
+                }, 500);
                 setTimeout(function () {
-                    $('#target-letter').text(`Errors: ${countKeysBad} | WPM: ${getWPM()}`);
-                }, 1200);
+                    $('#feedback').text(`Errors: ${countKeysBad} | WPM: ${getWPM()}`);
+                }, 1500);
+                setTimeout(function () {
+                    $('#target-letter').append(`<div id='play-again'>Play Again?</div>`);
+                    $('#play-again').on('click', function() {
+                        window.location.href = window.location.pathname + window.location.search + window.location.hash;
+                    });
+                }, 2500);
                 resultsDisplayed = true;
             };
             return true;
@@ -321,6 +327,8 @@ $(document).ready(function () {
         let wpm = parseFloat(Math.round((wordCount / (timer.totalSeconds / 60)) * 100) / 100).toFixed(2);
         return wpm;
     };
+
+
 
 
 
